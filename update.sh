@@ -2,11 +2,12 @@
 
 source ../../.env/.env
 
-cp ../../.env/.env .env
-
 echo "Updating Raspbot package..."
 npm i raspbot;
 echo "Raspbot package updated!";
+echo "Copio il file di configurazione...";
+cp ../../.env/.env .env
+echo "File di configurazione copiato!";
 echo "Restarting daemon...";
 echo $PI_PASS | sudo -S systemctl daemon-reload
 echo "Daemons reloaded!";
