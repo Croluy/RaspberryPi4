@@ -36,6 +36,19 @@ bot.start((ctx) => {
     }
 });
 
+bot.command('help', (ctx) => {
+    if(f.isAdmin(ctx)){
+        ctx.reply("/ip -> get IP Addresses of the RaspberryPi\n/cmd -> execute a command on the RaspberryPi\n/sudo -> execute a command on the RaspberryPi with sudo privileges\n/help -> show this message\n");
+    }
+});
+
+bot.command('ip', (ctx) => {
+    if(f.isAdmin(ctx)){
+        f.getLocalIp(ctx);
+        f.getPublicIp(ctx);
+    }
+});
+
 bot.command('cmd', (ctx) => {
     if(f.isAdmin(ctx)){
         //Get arguments and join them to have a single string

@@ -9,9 +9,12 @@ echo "Copio il file di configurazione...";
 cp ../../.env/.env .env;
 echo "File di configurazione copiato!\n";
 echo "Restarting daemon...";
-echo $PI_PASS | sudo -S systemctl daemon-reload
+echo $PI_PASS | sudo -S systemctl daemon-reload;
 echo "Daemons reloaded!\n";
 echo "Restarting service...";
 echo $PI_PASS | sudo -S systemctl restart telegram_bot.service;
 echo "Service restarted!\n";
+echo "Dò i permessi al file di upload...";
+echo $PI_PASS | sudo -S chmod +x upload.sh;
+echo "Permessi garantiti!\n";
 echo "✅ Raspbot updated and restarted!";

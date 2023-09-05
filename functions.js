@@ -3,6 +3,7 @@ const path = require("path");
 require("dotenv").config();
 const {exec} = require('child_process');
 const shellQuote = require('shell-quote');
+const axios = require('axios');
 
 //importing Replies from BotReplies.json
 const res = fs.readFileSync(path.resolve(__dirname, "Replies.json"));
@@ -93,7 +94,7 @@ function executeSudo(ctx, pass, command){
         }
         
         if(stdout!==""){
-            ctx.reply("✅ Comando '<code>"+command+"</code>' eseguito con successo.",{parse_mode: 'HTML'});
+            ctx.reply("✅ Comando '<code>"+command+"</code>' eseguito con successo <b>SENZA sudo</b>.",{parse_mode: 'HTML'});
             ctx.reply(`${stdout}`);
             return true;
         }
@@ -123,6 +124,23 @@ function checkWithoutSudo(ctx, command){
     }
 }
 
+function getLocalIp(ctx){
+    let ip = require('ip');
+    ctx.reply("Local: "+ip.address());
+}
+
+async function getPublicIp(ctx){
+    try {
+        const response = await axios.get('https://api.ipify.org?format=json');
+        const { ip } = response.data;
+        console.log(ip);
+        ctx.reply("Public: "+ip);
+    } catch (error) {
+        ctx.reply("Error while getting public ip.");
+        return;
+    }
+}
+
 //Old method, requires 'f.' prefix. But it provides with functions description.
 module.exports = {
     s,
@@ -131,6 +149,8 @@ module.exports = {
     execute,
     executeSudo,
     checkWithoutSudo,
+    getLocalIp,
+    getPublicIp
 }
 
 /*//New method, does not require prefix. But it does not provide with functions description.
