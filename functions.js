@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 require("dotenv").config();
+const {exec} = require('child_process');
+const shellQuote = require('shell-quote');
 
 //importing Replies from BotReplies.json
 const res = fs.readFileSync(path.resolve(__dirname, "Replies.json"));
@@ -39,10 +41,96 @@ function isAdmin(ctx){
     return (ctx.message.from.id === parseInt(process.env.CREATOR_ID) && ctx.message.from.username === process.env.CREATOR_USERNAME);
 }
 
-//Old method, requires 'fun.' prefix. But it provides with functions description.
+/**
+ * Given a string checks if it starts with the word sudo
+ * @param {string} s
+ * @returns {boolean} true if the string starts with sudo, false otherwise
+ */
+function isSudo(s){
+    return s.startsWith("sudo ");
+}
+
+/**
+ * Function to execute command and check for errors.
+ * @param {obj} ctx 
+ * @param {string} command 
+ */
+function execute(ctx, command){
+    exec(command, (error, stdout, stderr) => {
+        if (error) {
+            ctx.reply("❗️ Errore durante l'esecuzione del comando: '<code>"+command+"</code>'",{parse_mode: 'HTML'});
+            ctx.reply(`${error}`);
+            return false;
+        }
+
+        if(stderr!==""){
+            ctx.reply("❗️ StdErr durante l'esecuzione del comando '<code>"+command+"</code>'",{parse_mode: 'HTML'});
+            ctx.reply(`⚠️ StdErr:\n${stderr}`);
+            return false;
+        }
+        
+        if(stdout!==""){
+            ctx.reply("✅ Comando '<code>"+command+"</code>' eseguito con successo.",{parse_mode: 'HTML'});
+            ctx.reply(`${stdout}`);
+            return true;
+        }
+    });
+}
+
+function executeSudo(ctx, pass, command){
+    let p="echo \""+pass+"\" | sudo -S "+command;
+    exec(p, (error, stdout, stderr) => {
+        if (error) {
+            ctx.reply("❗️ Errore durante l'esecuzione del comando: '<code>"+command+"</code>'",{parse_mode: 'HTML'});
+            ctx.reply(`${error}`);
+            return false;
+        }
+
+        if(stderr!==""){
+            ctx.reply("❗️ StdErr durante l'esecuzione del comando '<code>"+command+"</code>'",{parse_mode: 'HTML'});
+            ctx.reply(`⚠️ StdErr:\n${stderr}`);
+            return false;
+        }
+        
+        if(stdout!==""){
+            ctx.reply("✅ Comando '<code>"+command+"</code>' eseguito con successo.",{parse_mode: 'HTML'});
+            ctx.reply(`${stdout}`);
+            return true;
+        }
+    });
+}
+
+/**
+ * Check if command can be executed without the sudo prefix.
+ * 
+ * @param {obj} ctx - telegraf context
+ * @param {string} command - command to check
+ * @returns {boolean} true if the command can be executed without sudo, false otherwise
+ */
+function checkWithoutSudo(ctx, command){
+    if(isSudo(command)){
+        //try to execute command without sudo prefix check if it works
+        command=command.replace("sudo ", "");
+        exec(command, (error, stdout, stderr) => {
+            if(error) return false;
+            if(stderr!=="") return false;
+            if(stdout!==""){
+                ctx.reply("✅ Comando '<code>"+command+"</code>' eseguito con successo <b>SENZA sudo</b>.",{parse_mode: 'HTML'});
+                ctx.reply(`${stdout}`);
+                return true;
+            }
+        });
+    }
+}
+
+//Old method, requires 'f.' prefix. But it provides with functions description.
 module.exports = {
     s,
     isAdmin,
+    isSudo,
+    execute,
+    executeSudo,
+    checkWithoutSudo,
 }
 
 /*//New method, does not require prefix. But it does not provide with functions description.

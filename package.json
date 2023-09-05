@@ -10,9 +10,11 @@
   "author": "Croluy",
   "license": "ISC",
   "dependencies": {
+    "child_process": "^1.0.2",
     "env": "^0.0.2",
     "fs": "^0.0.1-security",
     "path": "^0.12.7",
+    "shell-quote": "^1.8.1",
     "telegraf": "^4.13.1"
   },
   "devDependencies": {
