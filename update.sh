@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source .env
+source /home/kali/home/kali/Scripts/node_modules/raspbot/.env
 
 echo "Pass: $PI_PASS"
 echo $PI_PASS
