@@ -2,8 +2,7 @@
 
 source ../../.env/.env
 
-echo "Pass: $PI_PASS"
-echo $PI_PASS
+cp ../../.env/.env .env
 
 echo "Updating Raspbot package..."
 npm i raspbot;
